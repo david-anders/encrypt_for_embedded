@@ -1,3 +1,4 @@
+![Python application](https://github.com/david-anders/encrypt_for_embedded/workflows/Python%20application/badge.svg?branch=master)
 # encrypt_for_embedded
 Repo for Distributing data safely to embedded devices.
 
