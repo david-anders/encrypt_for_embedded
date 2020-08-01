@@ -18,9 +18,7 @@ from cryptography.hazmat.backends import default_backend
 
 T = TypeVar("T")
 
-DATA_IV_PREFIX = b"IV:"
-DATA_IV_CRYPT_SEP = b"\n"
-IV_LEN = 128 // 8
+IV_LEN = 2**7 // 8  # 16 Byte long initialization vector for 128 bit AES
 
 
 class EncryptedData:
@@ -95,11 +93,8 @@ class EncryptedData:
         :param data: The serialized data representing the EncryptedData object.
         :return: A EncryptedData object.
         """
-        assert data.startswith(DATA_IV_PREFIX)
-        pref_len = len(DATA_IV_PREFIX)
-        iv = data[pref_len: pref_len + IV_LEN]
-        data_start = pref_len + IV_LEN + len(DATA_IV_CRYPT_SEP)
-        assert data[pref_len + IV_LEN:data_start] == DATA_IV_CRYPT_SEP
+        iv = data[:IV_LEN]
+        data_start = IV_LEN
         data = data[data_start:]
         return cls(data=data, iv=iv)
 
@@ -117,7 +112,7 @@ class EncryptedData:
         The other end can easily deserialize the object and with the correct key, encrypt and read the secret.
         :return: A bytes representation of the encrypted secret.
         """
-        return DATA_IV_PREFIX + self.iv + b"\n" + self.data
+        return self.iv + self.data
 
     def decrypt(self, key) -> bytes:
         """ Decrypt this EncryptedData object.
